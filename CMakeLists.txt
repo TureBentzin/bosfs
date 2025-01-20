@@ -3,4 +3,6 @@ project(bosfs)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(bosfs main.cpp)
+add_executable(bosfs main.cpp
+        filesystem.h
+        file_flags.h)
