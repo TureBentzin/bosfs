@@ -36,7 +36,7 @@ namespace bosfs {
 
     void closeFileSystem(FileSystem *fs);
 
-    void initializeNativeInfile(FILE *file);
+    void initializeNativeInfile(FILE *file, FileSystem *fs, unsigned long blocks);
 }
 
 #endif //BOSFS_NATIVE_INFILE_H

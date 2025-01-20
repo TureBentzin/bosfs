@@ -37,7 +37,7 @@ namespace bosfs {
      * @param fsName
      * @return
      */
-    [[maybe_unused]] FileSystem *startFileSystem(const char *fsName) {
+    [[maybe_unused]] FileSystem *startFileSystem(const char *fsName, unsigned long blocks) {
         ensureDirectoryExists(".bosfs");
 
         std::filesystem::path path(".bosfs");
@@ -47,19 +47,20 @@ namespace bosfs {
         const wchar_t *cPath = path.native().c_str();
         char pathChar[260];
         wcstombs(pathChar, cPath, 260);
-
+        auto *fs = new FileSystem();
         FILE *file = fopen(pathChar, "rb+");
         if (file == nullptr) {
             //initialize file
             file = fopen(pathChar, "wb+");
-            initializeNativeInfile(file);
+
+            initializeNativeInfile(file, fs, blocks);
         }
 
         if (file == nullptr) {
             throw BosfsFileSystemException("Could not open or create filesystem file");
         }
 
-        FileSystem *fs = new FileSystem();
+
         strcpy(fs->fsName, fsName);
 
         return fs;

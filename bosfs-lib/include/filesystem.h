@@ -34,11 +34,7 @@
 
 namespace bosfs {
 
-    /**
-     * the filesystem is protected by a lockfile externally and internally by a mutex
-     */
 
-    std::mutex mutex;
 
     /**
      * Typedef for a block of data.
@@ -173,9 +169,10 @@ namespace bosfs {
     /**
      * Initializes the filesystem.
      * @param fsName name of the filesystem
+     * @param blocks amount of blocks to allocate if the filesystem is created
      * @return pointer to the filesystem
      */
-    [[maybe_unused]] FileSystem* startFileSystem(const char *fsName);
+    [[maybe_unused]] FileSystem* startFileSystem(const char *fsName, unsigned long blocks = 1);
 
 
 }
