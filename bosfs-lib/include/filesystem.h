@@ -94,8 +94,8 @@ namespace bosfs {
          */
         char name[BOSFS_FILE_NAME_MAXLENGTH]; // 256 bytes
         FileFlags flags; // 0b00000000 - will be implemented later
-        unsigned int startBlock; // 4 bytes
-        unsigned int blockCount; // 4 bytes
+        Address startBlock; // 4 bytes
+        unsigned long blockCount; // 4 bytes
     public:
         File() { // default constructor generates an empty file
             name[0] = '\0';
@@ -118,7 +118,8 @@ namespace bosfs {
     struct FileSystem {
         char fsName[BOSFS_FILESYSTEM_NAME_MAXLENGTH]; // 256 bytes
         IndexTable indexTable;
-        unsigned long long startByte; // the start byte of the filesystem (alw
+        unsigned long long startByte; // the start byte of the filesystem
+        unsigned long long blocks = 0; // the amount of blocks
     };
 
 
@@ -172,6 +173,30 @@ namespace bosfs {
      */
     [[maybe_unused]] FileSystem *startFileSystem(const char *fsName, unsigned long blocks = 1);
 
+    void storeNewFile(FileSystem &fs, const char *name, const char *data, unsigned int length);
+
+    /**
+     * This function will find free blocks in the filesystem.
+     * @param fs
+     * @param blocks
+     * @return first address of the free blocks
+     */
+    Address findFreeBlocks(FileSystem &fs, unsigned int blocks);
+
+    /**
+     * Every bit in the block map represents one block.
+     * If the bit is set, the block is occupied.
+     * If the bit is not set, the block is free.
+     *
+     */
+    typedef uint64_t BlockMap[BOSFS_FILE_MAXBLOCKS / 64];
+
+    /**
+     * Function that will map the filesystem to a block map.
+     * @param fs filesystem to map
+     * @param blockMap block map to fill
+     */
+    uint64_t getBlockMap(FileSystem &fs, BlockMap &blockMap);
 
 }
 

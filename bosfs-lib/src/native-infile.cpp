@@ -14,6 +14,8 @@
 #include "native-infile.h"
 
 #include "bosfs_exceptions.h"
+#include "filesystem.h"
+
 
 /*
  * This file contains the implementation of the two primary filesystem functions.
@@ -77,6 +79,8 @@ namespace bosfs {
         return fs;
 
     }
+
+
 
     void initializeNativeInfile(FILE *file, FileSystem *fs, unsigned long blocks) {
         //check if file is empty
