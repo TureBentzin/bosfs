@@ -22,6 +22,10 @@
 #define BOSFS_FILE_MAXBLOCKS 160000000
 #endif
 
+#ifndef BOSFS_FILE_MAXAMOUNT
+#define BOSFS_FILE_MAXAMOUNT BOSFS_FILE_MAXBLOCKS
+#endif
+
 #include "mutex"
 
 namespace bosfs {
@@ -68,11 +72,46 @@ namespace bosfs {
      * Contains the name of the file and the block numbers of the blocks that contain the file's data.
      */
     struct File {
-        char name[BOSFS_FILE_NAME_MAXLENGTH];
+        /**
+         * name is stored in following format:
+         * /path/to/file.ext
+         * terminated by \0
+         * the name does not contain the leading / (hidden character)
+         */
+        char name[BOSFS_FILE_NAME_MAXLENGTH]; // 256 bytes
         FileFlags flags; // 0b00000000 - will be implemented later
-        unsigned int startBlock;
-        unsigned int blockCount;
+        unsigned int startBlock; // 4 bytes
+        unsigned int blockCount; // 4 bytes
     };
+
+
+    /**
+     * Index table at the top of the filesystem.
+     *
+     * Estimated size: 160000000 files * (256 + 4 + 4 + 2) Byte = 42.5 GB
+     */
+    struct IndexTable {
+        File files[BOSFS_FILE_MAXBLOCKS]; // 160000000 files
+    };
+
+    /**
+     * BOSFS uses virtual addresses to access blocks of data.
+     * The address is a 64-bit unsigned integer. (8 bytes)
+     *
+     * Address describes the address type used in the filesystem.
+     */
+    typedef unsigned long long Address;
+
+
+    struct FileSystem {
+        IndexTable indexTable;
+        unsigned long long startByte; // the start byte of the filesystem (alw
+
+    };
+
+
+
+    //inline functions
 
     /**
      * Checks if the file has the given flag set.
@@ -95,6 +134,10 @@ namespace bosfs {
 
 
     // functions
+
+    Block loadBlock(const FileSystem &fs, Address address);
+
+    void saveBlock(const FileSystem &fs, const Block &block);
 
 
 
