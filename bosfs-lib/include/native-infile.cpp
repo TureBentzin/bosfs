@@ -77,6 +77,9 @@ namespace bosfs {
             fs->indexTable = IndexTable();
             fwrite(fs, sizeof(FileSystem), 1, file);
 
+            //write
+            fputc(BOSFS_NATIVE_STARTBYTE, file);
+
             // write empty blocks
             for (unsigned long i = 0; i < blocks; i++) {
                 BlockData data{0b00};

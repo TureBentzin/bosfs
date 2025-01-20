@@ -11,6 +11,10 @@
 #define BOSFS_NATIVE_ENDBYTE 0x19 // end of medium
 #endif
 
+#ifndef BOSFS_NATIVE_STARTBYTE
+#define BOSFS_NATIVE_STARTBYTE 0x16 // synchronous idle
+#endif
+
 namespace bosfs {
 
     namespace native {
