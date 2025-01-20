@@ -22,5 +22,5 @@ set_target_properties(bosfs-lib PROPERTIES VERSION 1.0)
 target_include_directories(bosfs-lib PRIVATE ./include)
 
 # Define the BOSFS_LIB_EXPORTS macro for shared library builds
-target_compile_definitions(bosfs-lib PRIVATE BOSFS_LIB_EXPORTS)
+target_compile_definitions(bosfs-lib PRIVATE BOSFS_LIB_EXPORTS BOSFS_SOLUTION_NATIVE_INFILE)
 

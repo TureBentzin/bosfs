@@ -26,6 +26,10 @@
 #define BOSFS_FILE_MAXAMOUNT 256 //default: 256 files
 #endif
 
+#ifndef BOSFS_FILESYSTEM_NAME_MAXLENGTH
+#define BOSFS_FILESYSTEM_NAME_MAXLENGTH 256
+#endif
+
 #include "mutex"
 
 namespace bosfs {
@@ -52,8 +56,15 @@ namespace bosfs {
      * Block numbers are guaranteed to be unique within the filesystem.
      */
     struct Block {
-        BlockData data;
+        BlockData data{};
         unsigned int blockNumber;
+
+        Block() {
+            blockNumber = 0;
+            for (char &i: data) {
+                i = '\0';
+            }
+        }
     };
 
 
@@ -82,6 +93,13 @@ namespace bosfs {
         FileFlags flags; // 0b00000000 - will be implemented later
         unsigned int startBlock; // 4 bytes
         unsigned int blockCount; // 4 bytes
+    public:
+        File() { // default constructor generates an empty file
+            name[0] = '\0';
+            flags = 0;
+            startBlock = 0;
+            blockCount = 0;
+        }
     };
 
 
@@ -104,9 +122,9 @@ namespace bosfs {
 
 
     struct FileSystem {
+        char fsName[BOSFS_FILESYSTEM_NAME_MAXLENGTH]; // 256 bytes
         IndexTable indexTable;
         unsigned long long startByte; // the start byte of the filesystem (alw
-
     };
 
 
@@ -145,9 +163,19 @@ namespace bosfs {
 
     unsigned int countFiles(const IndexTable &indexTable);
 
+    //implemented depending on the access solution
     Block loadBlock(const FileSystem &fs, Address address);
 
+    //implemented depending on the access solution
     void saveBlock(const FileSystem &fs, const Block &block);
+
+    //implemented depending on the access solution
+    /**
+     * Initializes the filesystem.
+     * @param fsName name of the filesystem
+     * @return pointer to the filesystem
+     */
+    [[maybe_unused]] FileSystem* startFileSystem(const char *fsName);
 
 
 }

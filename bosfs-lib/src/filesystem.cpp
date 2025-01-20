@@ -14,3 +14,7 @@ unsigned int bosfs::countFiles(const bosfs::IndexTable &indexTable) {
     }
     return count;
 }
+
+
+
+
