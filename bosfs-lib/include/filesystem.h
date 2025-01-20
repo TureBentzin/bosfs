@@ -23,7 +23,7 @@
 #endif
 
 #ifndef BOSFS_FILE_MAXAMOUNT
-#define BOSFS_FILE_MAXAMOUNT BOSFS_FILE_MAXBLOCKS
+#define BOSFS_FILE_MAXAMOUNT 256 //default: 256 files
 #endif
 
 #include "mutex"
@@ -88,10 +88,10 @@ namespace bosfs {
     /**
      * Index table at the top of the filesystem.
      *
-     * Estimated size: 160000000 files * (256 + 4 + 4 + 2) Byte = 42.5 GB
      */
     struct IndexTable {
-        File files[BOSFS_FILE_MAXBLOCKS]; // 160000000 files
+        // if a file is deleted: the name is set to \0 and other fields should be 0 but are not guaranteed
+        File files[BOSFS_FILE_MAXAMOUNT];
     };
 
     /**
@@ -130,15 +130,24 @@ namespace bosfs {
         return file.flags |= flags;
     }
 
+    inline bool clearFlag(File &file, const FileFlags flags) {
+        //example: clearFlag(file, 0b00000001) -> clears the flag 0b00000001 for the file
+        return file.flags &= ~flags;
+    }
 
+    inline bool checkIfFree(const File &file) {
+        return file.name[0] == '\0';
+    }
 
 
     // functions
 
+
+    unsigned int countFiles(const IndexTable &indexTable);
+
     Block loadBlock(const FileSystem &fs, Address address);
 
     void saveBlock(const FileSystem &fs, const Block &block);
-
 
 
 }
