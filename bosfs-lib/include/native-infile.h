@@ -18,7 +18,15 @@
 namespace bosfs {
 
     namespace native {
-        std::vector<FileSystem *> openFileSystems;
+
+        struct Container {
+            FileSystem *fs;
+            FILE *file;
+        };
+
+        std::vector<Container> openFileSystems;
+
+        Container& getContainer(const FileSystem &fs);
     }
 
     void saveBlock(const bosfs::FileSystem &fs, const bosfs::Block &block);

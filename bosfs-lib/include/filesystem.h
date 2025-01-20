@@ -35,7 +35,6 @@
 namespace bosfs {
 
 
-
     /**
      * Typedef for a block of data.
      * This represents the minimum unit of data that can be read or written to the filesystem.
@@ -46,6 +45,14 @@ namespace bosfs {
     typedef char BlockData[BOSFS_BLOCK_SIZE];
 
     /**
+     * BOSFS uses virtual addresses to access blocks of data.
+     * The address is a 64-bit unsigned integer. (8 bytes)
+     *
+     * Address describes the address type used in the filesystem.
+     */
+    typedef unsigned long long Address;
+
+    /**
      * Typedef for a bosfs block.
      * Contains the data of the block and the block number.
      *
@@ -53,7 +60,7 @@ namespace bosfs {
      */
     struct Block {
         BlockData data{};
-        unsigned int blockNumber;
+        Address blockNumber;
 
         Block() {
             blockNumber = 0;
@@ -107,15 +114,6 @@ namespace bosfs {
         // if a file is deleted: the name is set to \0 and other fields should be 0 but are not guaranteed
         File files[BOSFS_FILE_MAXAMOUNT];
     };
-
-    /**
-     * BOSFS uses virtual addresses to access blocks of data.
-     * The address is a 64-bit unsigned integer. (8 bytes)
-     *
-     * Address describes the address type used in the filesystem.
-     */
-    typedef unsigned long long Address;
-
 
     struct FileSystem {
         char fsName[BOSFS_FILESYSTEM_NAME_MAXLENGTH]; // 256 bytes
@@ -172,7 +170,7 @@ namespace bosfs {
      * @param blocks amount of blocks to allocate if the filesystem is created
      * @return pointer to the filesystem
      */
-    [[maybe_unused]] FileSystem* startFileSystem(const char *fsName, unsigned long blocks = 1);
+    [[maybe_unused]] FileSystem *startFileSystem(const char *fsName, unsigned long blocks = 1);
 
 
 }

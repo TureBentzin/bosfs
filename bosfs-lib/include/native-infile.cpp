@@ -25,11 +25,20 @@
 namespace bosfs {
 
     void saveBlock(const bosfs::FileSystem &fs, const bosfs::Block &block) {
-
+        native::Container &container = native::getContainer(fs);
+        FILE *file = container.file;
+        fseek(file, fs.startByte + block.blockNumber * BOSFS_BLOCK_SIZE, SEEK_SET);
+        fwrite(block.data, BOSFS_BLOCK_SIZE, 1, file);
     }
 
     bosfs::Block loadBlock(const bosfs::FileSystem &fs, bosfs::Address address) {
-        return bosfs::Block();
+        native::Container &container = native::getContainer(fs);
+        FILE *file = container.file;
+        fseek(file, fs.startByte + address * BOSFS_BLOCK_SIZE, SEEK_SET);
+        Block block;
+        fread(block.data, BOSFS_BLOCK_SIZE, 1, file);
+        block.blockNumber = address;
+        return block;
     }
 
     /**
@@ -103,6 +112,15 @@ namespace bosfs {
 
     void closeFileSystem(FileSystem *fs) {
 
+    }
+
+    native::Container &native::getContainer(const FileSystem &fs) {
+        for (auto &container: openFileSystems) {
+            if (container.fs == &fs) { //compare by address
+                return container;
+            }
+        }
+        throw BosfsFileSystemException("Filesystem not found");
     }
 }
 
