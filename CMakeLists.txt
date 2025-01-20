@@ -3,17 +3,28 @@ project(bosfs)
 
 set(CMAKE_CXX_STANDARD 20)
 
-
-# compile bosfs-lib as a dynamic library
+# Compile bosfs-lib as a dynamic library
 add_subdirectory(bosfs-lib)
 
-# compile bosfs as an executable
+file(GLOB BOSFS_SOURCES # only in the current directory
+        cli/*.cpp
+        cli/*.c
+)
 
-# glob source files
-file(GLOB_RECURSE BOSFS_SOURCES *.cpp *.c)
+message("Detected source files: ${BOSFS_SOURCES}")
 
 add_executable(bosfs ${BOSFS_SOURCES})
 
-target_link_libraries(bosfs bosfs-lib)
+# Link bosfs-lib
+target_link_libraries(bosfs PRIVATE bosfs-lib)
+
+# Include directories for the bosfs executable
+target_include_directories(bosfs PRIVATE bosfs-lib/include)
 
 
+add_custom_command(
+        TARGET bosfs POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:bosfs-lib> $<TARGET_FILE_DIR:bosfs>
+        COMMENT "Copying bosfs-lib.dll to the output directory"
+)
