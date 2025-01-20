@@ -24,6 +24,7 @@
 
 namespace bosfs {
 
+    // native fs implementation
     void saveBlock(const bosfs::FileSystem &fs, const bosfs::Block &block) {
         native::Container &container = native::getContainer(fs);
         FILE *file = container.file;
@@ -31,6 +32,7 @@ namespace bosfs {
         fwrite(block.data, BOSFS_BLOCK_SIZE, 1, file);
     }
 
+    //native fs implementation
     bosfs::Block loadBlock(const bosfs::FileSystem &fs, bosfs::Address address) {
         native::Container &container = native::getContainer(fs);
         FILE *file = container.file;
