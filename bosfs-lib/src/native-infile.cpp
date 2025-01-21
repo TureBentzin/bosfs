@@ -81,7 +81,6 @@ namespace bosfs {
     }
 
 
-
     void initializeNativeInfile(FILE *file, FileSystem *fs, unsigned long blocks) {
         //check if file is empty
         fseek(file, 0, SEEK_END);

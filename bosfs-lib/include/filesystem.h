@@ -183,20 +183,36 @@ namespace bosfs {
      */
     Address findFreeBlocks(FileSystem &fs, unsigned int blocks);
 
+
+    /**
+     * A block map part is a part of the block map.
+     * It is a 64-bit unsigned integer.
+     */
+    typedef uint64_t BlockMapPart;
+
     /**
      * Every bit in the block map represents one block.
      * If the bit is set, the block is occupied.
      * If the bit is not set, the block is free.
      *
      */
-    typedef uint64_t BlockMap[BOSFS_FILE_MAXBLOCKS / 64];
+    typedef BlockMapPart *BlockMap;
+
+
+    /**
+     * Function that will return the block map of the filesystem.
+     * @param fs
+     * @return block map
+     * @note You have to free the block map after usage.
+     */
+    BlockMap getBlockMap(FileSystem &fs);
 
     /**
      * Function that will map the filesystem to a block map.
      * @param fs filesystem to map
      * @param blockMap block map to fill
      */
-    uint64_t getBlockMap(FileSystem &fs, BlockMap &blockMap);
+    uint64_t populateBlockMap(FileSystem &fs, BlockMap &blockMap);
 
 }
 

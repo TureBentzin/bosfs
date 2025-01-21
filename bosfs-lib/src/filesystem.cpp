@@ -57,10 +57,31 @@ bosfs::Address bosfs::findFreeBlocks(bosfs::FileSystem &fs, unsigned int blocks)
     unsigned long long curr_freeBlocks = 0; //current free blocks
 
     //iterate through the files
+    BlockMap blockMap = getBlockMap(fs);
+
+    //iterate over blockmap to find free blocks
+
+    for (BlockMapPart currentPart = fs.blocks / 64; currentPart >= 0; currentPart--) {
+        BlockMapPart part = blockMap[currentPart];
+        for (int i = 0; i < 64; i++) {
+            if ((part & (1 << i)) == 0) {
+                curr_freeBlocks++;
+                if (curr_freeBlocks == blocks) {
+                    return currentPart * 64 + i;
+                }
+            } else {
+                curr_freeBlocks = 0;
+            }
+        }
+    }
+
+
+    delete[] blockMap;
+
 
 }
 
-uint64_t bosfs::getBlockMap(bosfs::FileSystem &fs, bosfs::BlockMap &blockMap) {
+uint64_t bosfs::populateBlockMap(bosfs::FileSystem &fs, bosfs::BlockMap &blockMap) {
     //if a block is not free, set the corresponding bit in the block map
     IndexTable it = fs.indexTable;
 
@@ -80,12 +101,29 @@ uint64_t bosfs::getBlockMap(bosfs::FileSystem &fs, bosfs::BlockMap &blockMap) {
     }
 
     //set the rest of the bits to 0
-    for (int i = taken; i < BOSFS_FILE_MAXBLOCKS; i++) {
+    for (uint64_t i = taken; i < BOSFS_FILE_MAXBLOCKS; i++) {
         blockMap[i / 64] &= ~(1 << (i % 64));
+    }
+
+    //ensure to fill block bits in the last block map part with 1 (occupied) when the last block is not a multiple of 64
+    if (fs.blocks % 64 != 0) {
+        for (Address i = fs.blocks % 64; i < 64; i++) {
+            blockMap[fs.blocks / 64] |= 1 << i;
+        }
     }
 
     return taken;
 }
+
+[[nodiscard]] bosfs::BlockMap bosfs::getBlockMap(bosfs::FileSystem &fs) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "MemoryLeak"
+    auto blockMap = new BlockMapPart[fs.blocks / 64]; //memory leak !!!
+#pragma clang diagnostic pop
+    populateBlockMap(fs, blockMap);
+    return blockMap;
+}
+
 
 
 
