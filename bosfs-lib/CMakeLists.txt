@@ -11,7 +11,7 @@ set(CMAKE_CXX_STANDARD 20)
 # glob source files
 
 file(GLOB_RECURSE BOSFS_LIB_SOURCES *.cpp *.c)
-message("Detected source files: ${BOSFS_LIB_SOURCES}")
+message("Detected bosfs-lib source files: ${BOSFS_LIB_SOURCES}")
 
 # add bosfs-lib as a shared library
 add_library(bosfs-lib SHARED ${BOSFS_LIB_SOURCES})
